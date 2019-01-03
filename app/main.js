@@ -2,14 +2,17 @@ let main = (document => {
 	let items = {
 		current: [],
 		done: [],
+		get currentItems() {
+			return this.current.length;
+		},
 		get doneItems() {
-			console.log(this.done.length);
+			return this.done.length;
 		}
 	};
 
 	let inputValue = document.querySelector('.input-add');
 	let todoList = document.querySelector('.todo-list');
-	let todoItem = document.querySelectorAll('.todo-item');
+	let todoCounter = document.querySelector('strong');
 
 	function createElement(tag, props, ...children) {
 		let element = document.createElement(tag);
@@ -56,13 +59,9 @@ let main = (document => {
 		let deleteBtn = createElement('button', { className: 'delete' });
 		let listItem = createElement('li', {'data-id': todo.id }, checkbox, label, editInput, editBtn, deleteBtn);
 
-		// todoList.appendChild(listItem); // Добавление элемента в список
+		todoList.appendChild(listItem); // Добавление элемента в список
 
-		// bindEvents(listItem);
-
-		checkbox.addEventListener('change', function() {
-			doneItems(this);
-		});
+		bindEvents(listItem);
 
 		switch (todo.state) {
 			case 'done': 
@@ -72,7 +71,6 @@ let main = (document => {
 				listItem.classList.add('todo-item');
 		}
 
-		todoList.appendChild(listItem); // Добавление элемента в список
 		listItem.id = todo.id;
 		return listItem;
 	}
@@ -82,10 +80,16 @@ let main = (document => {
 		let editBtn = todoItem.querySelector('.edit');
 		let deleteBtn = todoItem.querySelector('.delete');
 
-		// checkbox.addEventListener('change', toggleTodoItem);
+		checkbox.addEventListener('click', function() {
+			doneItem(this);
+		});
+
+		deleteBtn.addEventListener('click', function() {
+			deleteItem(this);
+		});
 	}
 	
-	function doneItems(todo) {
+	function doneItem(todo) {
 		let listItem = todo.parentNode;
 		let id = listItem.id;
 		let state = listItem.classList.contains('completed');
@@ -97,6 +101,21 @@ let main = (document => {
 			itemsAdd.push(item);
 			itemsRemove.splice(index, 1);
 		}
+		todoCounter.textContent = items.currentItems;
+	}
+
+	function deleteItem(todo) {
+		let listItem = todo.parentNode;
+		let id = listItem.id;
+		let state = listItem.classList.contains('completed');
+		let itemsArr = state ? items.done : items.current;
+		
+		listItem.remove();
+		for (let [index, item] of itemsArr.entries()) {
+			if (item.id !== id) continue;
+			itemsArr.splice(index, 1);
+		} 
+		todoCounter.textContent = items.currentItems;
 	}
 
 	// Создание и добавление объекта в массив current
@@ -115,14 +134,8 @@ let main = (document => {
 		
 		items.current.push(item);
 		createTodoItem(item);
-		inputValue.value = '';
+		todoCounter.innerHTML = items.currentItems;
 	}
-
-	// function toggleTodoItem({ target }) {
-	// 	let listItem = target.parentNode;
-
-	// 	listItem.classList.toggle('completed');
-	// }
 
 	function doId() {
 		return Math.random().toString(36).substr(2, 16);
@@ -133,6 +146,7 @@ let main = (document => {
 	inputValue.addEventListener('keyup', function(event) {
 		if (event.keyCode === 13) {
 			addTodoItem();
+			inputValue.value = '';
 		}
 	});
 })(document);
