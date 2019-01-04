@@ -137,12 +137,92 @@ let main = (document => {
 		todoCounter.innerHTML = items.currentItems;
 	}
 
+	function filterItems() {
+		let todoItems = todoList.getElementsByClassName('todo-item');
+		let filterBtn = document.querySelectorAll('a');
+
+		filterBtn.forEach(function(item) {
+			item.addEventListener('click', function() {
+				switch (item.className) {
+					case 'all-tasks':
+						filterBtn.forEach(function(item){
+							if (item.classList.contains('active')) {
+								item.classList.remove('active');
+							}
+						});
+						item.classList.add('active');
+
+						for (let i = 0; i < todoItems.length; i++) {
+							todoItems[i].style.display = 'block';
+						}
+						break;
+
+					case 'active-tasks':
+						filterBtn.forEach(function(item){
+							if (item.classList.contains('active')) {
+								item.classList.remove('active');
+							}
+						});
+						item.classList.add('active');
+
+						for (let i = 0; i < todoItems.length; i++) {
+							todoItems[i].style.display = 'block';
+						}
+						
+						for (let i = 0; i < todoItems.length; i++) {
+							if (todoItems[i].classList.contains('completed')) {
+								todoItems[i].style.display = 'none';
+								console.log(todoItems)
+							}
+						}
+						break;
+
+					case 'completed-tasks':
+						filterBtn.forEach(function(item){
+							if (item.classList.contains('active')) {
+								item.classList.remove('active');
+							}
+						});
+						item.classList.add('active');
+
+						for (let i = 0; i < todoItems.length; i++) {
+							todoItems[i].style.display = 'block';
+						}
+
+						for (let i = 0; i < todoItems.length; i++) {
+							if (!todoItems[i].classList.contains('completed')) {
+								todoItems[i].style.display = 'none';
+								console.log(todoItems)
+							}
+						}
+						break;
+					
+					case 'clear-list': 
+						filterBtn.forEach(function(item){
+							if (item.classList.contains('active')) {
+								item.classList.remove('active');
+							}
+						});
+						item.classList.add('active');
+
+						for (let i = 0; i <= todoItems.length; i++) {
+							if (todoItems[i].classList.contains('completed')) {
+								todoItems[i].remove();
+							}
+						}
+						break;
+				}
+			});
+		});
+	}
+
 	function doId() {
 		return Math.random().toString(36).substr(2, 16);
 	}
 
 	init();
-
+	filterItems();
+	
 	inputValue.addEventListener('keyup', function(event) {
 		if (event.keyCode === 13) {
 			addTodoItem();
